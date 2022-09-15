@@ -2,6 +2,7 @@ export default class extends HTMLElement {
 	#cssfile = "../main.css";
 	#shadow;
 
+	#test;
 	constructor() {
 		super();
 
