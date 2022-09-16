@@ -50,12 +50,12 @@ export default class {
 			this.#ajaxHandler.removeTask(id, (id) => this.#taskList.removeTask(id))
 		}
 		
-		// Adds a task to the task box
+		// Shows the task box
 		this.#taskList.addTaskCallback = () => {
 			this.#taskBox.show();
 		}
 		
-		// Adds a task to the database
+		// Adds a new task to the database
 		this.#taskBox.newTaskCallback = (task) => {
 			this.#ajaxHandler.addTask(task, (task) => this.#taskList.showTask(task))
 		}
