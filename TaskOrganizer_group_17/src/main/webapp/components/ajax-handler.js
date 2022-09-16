@@ -2,7 +2,6 @@
 
 export default class {
 	
-
 	async addTask(data, callback) {
 		const url = `../TaskServices/api/services/task/`
 
