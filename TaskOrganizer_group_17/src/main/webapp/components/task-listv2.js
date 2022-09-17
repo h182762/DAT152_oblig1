@@ -17,7 +17,6 @@ export default class extends HTMLElement {
 		this.#addTaskCallbacks = new Array()
 		this.#changeStatusCallbacks = new Array();
 
-
 		this.#createLink();
 		this.#createHTML();
 
@@ -103,7 +102,7 @@ export default class extends HTMLElement {
 			modifySelect.appendChild(option)
 		}
 
-		modifySelect.addEventListener("change", this.modifyStatus.bind(this), false)
+		modifySelect.addEventListener("change", this.updateTaskConfirmation.bind(this), false)
 		row.insertCell(2).appendChild(modifySelect);
 
 		/** Remove button */
@@ -114,10 +113,8 @@ export default class extends HTMLElement {
 		
 		row.insertCell(3).appendChild(removeButton);
 
-
 		
-	
-		
+		this.noTask()
 	}	
 
 	updateTask(id, status) {
@@ -152,6 +149,7 @@ export default class extends HTMLElement {
 		this.#addTaskCallbacks.push(method);
 	}
 	
+	
 	addTask(event) {
 		this.#addTaskCallbacks.forEach((x) => x(event))
 	}
@@ -164,7 +162,7 @@ export default class extends HTMLElement {
 		this.#changeStatusCallbacks.push(method);
 	}
 
-	modifyStatus(task) {
+	updateTaskConfirmation(task) {
 		let id = task.target.id
 		let status = this.#statuses[task.target.value]
 
@@ -212,11 +210,19 @@ export default class extends HTMLElement {
 		table.deleteRow(index);
 
 
-		//this.noTask()
+		this.noTask()
 	}
 
 	noTask() {
-
+		const table = this.#shadow.querySelector("#listTable")
+		let rows = table.rows
+		let numberofTasks = -1;
+		
+		for (let i = 0; i < rows.length; i++) {
+			numberofTasks++;
+		}
+		
+		this.#shadow.querySelector("span").textContent = "Found " + numberofTasks + " tasks.";
 	}
 
 
