@@ -2,7 +2,6 @@
 
 export default class {
 	
-
 	async addTask(data, callback) {
 		const url = `../TaskServices/api/services/task/`
 
@@ -47,7 +46,7 @@ export default class {
 
 		try {
 			const response = await fetch(url + id, requestOptions)
-			console.log(response)
+			
 			if (response.ok){
 	        	console.log("Success!")
 		        callback(id, status)

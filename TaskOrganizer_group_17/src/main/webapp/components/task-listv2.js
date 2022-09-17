@@ -73,11 +73,11 @@ export default class extends HTMLElement {
 
 
 	addTaskToList(newTask) {
-		
+		// Gets the table
 		const table = this.#shadow.querySelector("#listTable");
-
+		// Inserts a row
 		let row = table.insertRow(1);
-
+		// Inserts the cells
 		row.insertCell(0).innerText = newTask.title
 		row.insertCell(1).innerText = newTask.status
 
@@ -102,7 +102,7 @@ export default class extends HTMLElement {
 			modifySelect.appendChild(option)
 		}
 
-		modifySelect.addEventListener("change", this.updateTaskConfirmation.bind(this), false)
+		modifySelect.addEventListener("change", this.modifyStatus.bind(this), false)
 		row.insertCell(2).appendChild(modifySelect);
 
 		/** Remove button */
@@ -118,13 +118,15 @@ export default class extends HTMLElement {
 	}	
 
 	updateTask(id, status) {
+		// Gets the table
 		const table = this.#shadow.querySelector("#listTable");
-		
+		// Gets the rows
 		let rows = table.rows
-
+		// For each row...
 		for (let i = 0; i < rows.length; i++) {
+			// If the row ID equals the updated task ID...
 			if (rows[i].id == id) {
-				console.log("asdf")
+				// Updates the status
 				rows[i].childNodes[1].textContent = status
 			}
 		}
@@ -162,10 +164,14 @@ export default class extends HTMLElement {
 		this.#changeStatusCallbacks.push(method);
 	}
 
-	updateTaskConfirmation(task) {
-		let id = task.target.id
-		let status = this.#statuses[task.target.value]
 
+	modifyStatus(task) {
+		// The ID of the task to modify the status of
+		let id = task.target.id
+		// The new status
+		let status = this.#statuses[task.target.value]
+		
+		// Asks the user to confirm the change
 		let r = window.confirm("Change status to " + status + "?")
 		if (r) {
 			this.#changeStatusCallbacks.forEach((x) => x(id, status))

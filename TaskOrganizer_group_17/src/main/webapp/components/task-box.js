@@ -40,7 +40,7 @@ export default class extends HTMLElement {
 		<div id="myModal" class="modal">
 
 		  <div id="taskBox" class="modal-content">
-		    <span class="close">&times;</span>
+		    <span id="close" class="close">&times;</span>
 		    <form id="form">
 		    
 		    <label for="title">Title:</label>
@@ -66,7 +66,7 @@ export default class extends HTMLElement {
 		modal.style.display = "block";
 	}
 	
-	submit(event) {
+	submitEvent(event) {
 		event.preventDefault();
 		let title = event.target.title.value;
 		let status = event.target.status.value;
@@ -77,6 +77,11 @@ export default class extends HTMLElement {
 		};
 		
 		this.#newTaskCallbacks.forEach((x) => x(newtask))
+		this.close();
+	}
+	
+	closeEvent() {
+		this.close();
 	}
 
 	setStatuseslist(list) {
@@ -84,7 +89,10 @@ export default class extends HTMLElement {
 		this.#addStatus();
 	}
 
-	newtaskCallback(callback) {
+	/**
+     * @param {any} callback
+     */
+	set newTaskCallback(callback) {
 		this.#newTaskCallbacks.push(callback);
 	}
 
@@ -95,6 +103,9 @@ export default class extends HTMLElement {
 	}
 
 	#addStatus() {
+		let close = this.#shadow.querySelector("#close");
+		close.addEventListener("click", this.closeEvent.bind(this));
+		
 		let div = this.#shadow.querySelector("#form");
 		
 		let modifySelect = document.createElement("select");
@@ -119,6 +130,6 @@ export default class extends HTMLElement {
 	    let submit = document.createElement("input");
 	    submit.setAttribute("type", "submit");
 	    div.appendChild(submit)
-	    div.setAttribute("submit", this.submit.bind(this))
+	    div.addEventListener("submit", this.submitEvent.bind(this))
 	}
 }
