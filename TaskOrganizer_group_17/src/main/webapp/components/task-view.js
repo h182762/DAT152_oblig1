@@ -7,7 +7,6 @@ export default class {
 	#taskBox
 	#ajaxHandler
 
-
 	constructor() {
 		// Starts the Ajax Handler
 		this.#ajaxHandler = new AjaxHandler();
@@ -27,11 +26,11 @@ export default class {
 		// Fetches statuses from the database
 		const statusesJson = await this.#ajaxHandler.getStatuses();
 		const statuses = statusesJson.allstatuses
-		
+
 		// Sets the statuses
 		this.#taskList.setStatusesList(statuses)
 		this.#taskBox.setStatuseslist(statuses)
-		
+
 		// Shows the tasks that were fetched
 		for (let i = 1; i <= tasks.length; i++) {
 			this.#taskList.showTask(tasks[i - 1]);
@@ -49,17 +48,17 @@ export default class {
 			// TODO: Make the task disappear without reloading
 			this.#ajaxHandler.removeTask(id, (id) => this.#taskList.removeTask(id))
 		}
-		
+
 		// Shows the task box
 		this.#taskList.addTaskCallback = () => {
 			this.#taskBox.show();
 		}
-		
+
 		// Adds a new task to the database
 		this.#taskBox.newTaskCallback = (task) => {
 			this.#ajaxHandler.addTask(task, (task) => this.#taskList.showTask(task))
 		}
-		
+
 
 	}
 

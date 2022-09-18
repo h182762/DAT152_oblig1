@@ -11,7 +11,6 @@ export default class extends HTMLElement {
 
 		this.#shadow = this.attachShadow({ mode: "closed" });
 		this.#statuses = new Array();
-		this.#updateTaskCallbacks = new Array();
 		this.#deleteTaskCallbacks = new Array();
 		this.#addTaskCallbacks = new Array()
 		this.#changeStatusCallbacks = new Array();
