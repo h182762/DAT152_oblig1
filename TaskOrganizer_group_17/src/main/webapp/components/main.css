@@ -6,6 +6,10 @@ table#listTable {
 	
 }
 
+tr#top {
+	color: red
+}
+
 
 
 p {

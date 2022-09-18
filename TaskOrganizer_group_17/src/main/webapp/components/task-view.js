@@ -59,17 +59,9 @@ export default class {
 		this.#taskBox.newTaskCallback = (task) => {
 			this.#ajaxHandler.addTask(task, (task) => this.#taskList.showTask(task))
 		}
-
-
-
-
+		
 
 	}
-
-
-
-
-
 
 
 

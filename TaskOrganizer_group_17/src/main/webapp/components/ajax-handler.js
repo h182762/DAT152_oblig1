@@ -1,7 +1,7 @@
 "use strict";
 
 export default class {
-	
+
 	async addTask(data, callback) {
 		const url = `../TaskServices/api/services/task/`
 
@@ -15,11 +15,27 @@ export default class {
 
 		try {
 			const response = await fetch(url, requestOptions)
-			
-			if (response.ok){
-	        	console.log("Success!")
-		        callback(data)
-	        }
+
+			if (response.ok) {
+
+				const taskjson = await this.getTasks()
+				const alltasks = taskjson.tasks
+				let id = -1
+
+				for (let i = 0; i < alltasks.length; i++) {
+					if (alltasks[i].id > id) {
+						id = alltasks[i].id
+					}
+				}
+				
+				const newdata = {
+					"id": id,
+					"title": data.title,
+					"status": data.status
+				}
+
+				callback(newdata)
+			}
 		}
 
 		catch (error) {
@@ -31,11 +47,11 @@ export default class {
 	async updateTask(id, status, callback) {
 
 		const url = `../TaskServices/api/services/task/`
-		
+
 		const data = {
 			"status": status
 		};
-		
+
 		const requestOptions = {
 			method: 'PUT',
 			headers: { "Content-Type": "application/json; charset=utf-8" },
@@ -46,11 +62,11 @@ export default class {
 
 		try {
 			const response = await fetch(url + id, requestOptions)
-			
-			if (response.ok){
-	        	console.log("Success!")
-		        callback(id, status)
-	        }
+
+			if (response.ok) {
+				console.log("Success!")
+				callback(id, status)
+			}
 		} catch (error) {
 			console.log(error)
 		}
@@ -79,7 +95,7 @@ export default class {
 		} catch (error) {
 		}
 	}
-	
+
 	async getStatuses() {
 
 		const url = `../TaskServices/api/services/allstatuses`
@@ -105,7 +121,7 @@ export default class {
 
 		try {
 			const response = await fetch(url + id, { method: "DELETE" });
-			
+
 			if (response.ok) {
 				console.log("Success");
 				callback(id);

@@ -1,4 +1,4 @@
-import TaskList from "../components/task-listv2.js";
+import TaskList from "../components/task-list.js";
 import TaskBox from "../components/task-box.js";
 import TaskView from "../components/task-view.js";
 

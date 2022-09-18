@@ -1,28 +1,38 @@
 export default class extends HTMLElement {
-	#cssfile = "../main.css";
+	#cssfile = "main.css";
 	#shadow;
+	#statuses;
+	#deleteTaskCallbacks;
+	#addTaskCallbacks
+	#changeStatusCallbacks;
 
-	#test;
 	constructor() {
 		super();
 
 		this.#shadow = this.attachShadow({ mode: "closed" });
+		this.#statuses = new Array();
+		this.#updateTaskCallbacks = new Array();
+		this.#deleteTaskCallbacks = new Array();
+		this.#addTaskCallbacks = new Array()
+		this.#changeStatusCallbacks = new Array();
+
 		this.#createLink();
 		this.#createHTML();
 
-		const text = this.#shadow.querySelector("#text");
-		text.innerHTML = "Waiting for server data.";
+		this.#shadow.querySelector("span").textContent = "Waiting for server data.";
 
 		const bt = this.#shadow.querySelector("button[type=button]");
-		bt.addEventListener("click", this.newTask.bind(this));
-		this.#shadow.querySelector("#taskList").setAttribute("href", this.#cssfile);
-
-		this.#getTasks()
+		bt.addEventListener("click", this.addTask.bind(this), false);
+		bt.disabled = true;
 	}
 
 	#createLink() {
 		const link = document.createElement("link");
 
+		const path = import.meta.url.match(/.*\//)[0];
+		link.href = path.concat(this.#cssfile);
+		link.rel = "stylesheet";
+		link.type = "text/css";
 		this.#shadow.appendChild(link);
 		return link;
 	}
@@ -31,226 +41,188 @@ export default class extends HTMLElement {
 		const wrapper = document.createElement("div");
 
 		const content = `
-		<p id="text"></p>
+		<p><span></span></p>
 		
-		<button type="button">New Task</button>
+		<button id="newTask" type="button">New Task</button>
 		<br>
-		<div id="taskList">
-		
-		</div>
+		<br>
+	
+			<table id="listTable">
+				<tr id="top">
+					<td style="width: 50%;">Task</td>
+					<td style="width: 20%;">Status</td>
+					<td style="width: 15%;"></td>
+					<td style="width: 15%;"></td>
+				</tr>
+			</table>
+	
 		
 		`;
-
-		const styleTag = document.createElement('style');
-		styleTag.innerHTML = this.#cssfile;
+			
 		wrapper.insertAdjacentHTML("beforeend", content);
 		this.#shadow.appendChild(wrapper);
-		this.#shadow.appendChild(styleTag);
+		
 		return wrapper;
 	}
 
-	async newTask(data) {
-		
-		const url = `../TaskServices/api/services/task/`
-		
-		const requestOptions = {
-			method: 'POST',
-			headers: { "Content-Type": "application/json; charset=utf-8" },
-			body: JSON.stringify(data),
-			cache: "no-cache",
-			redirect: "error"
-		};
+	showTask(newTask) {
+		// Gets the table
+		const table = this.#shadow.querySelector("#listTable");
+		// Inserts a row
+		let row = table.insertRow(1);
+		// Inserts the cells
+		row.insertCell(0).innerText = newTask.title;
+		row.insertCell(1).innerText = newTask.status;
 
-		try {
-			const response = await fetch(url, requestOptions)
-			try {
-				
-			} catch (error) {
-				console.log(error)
-			}
-		} catch (error) {
-			console.log(error)
+		row.className += "rows";
+		row.setAttribute("id", newTask.id);
+
+		/** Modify select list */
+		let modifySelect = document.createElement("select");
+		modifySelect.setAttribute("id", newTask.id);
+
+		let option = document.createElement("option");
+		option.setAttribute("value", "");
+		option.textContent = "<Modify>";
+		option.setAttribute("selected", "selected");
+		option.setAttribute("disabled", "disabled");
+		modifySelect.appendChild(option);
+
+		for (let i = 0; i < this.#statuses.length; i++) {
+			let option = document.createElement("option");
+			option.setAttribute("value", i);
+			option.text = this.#statuses[i];
+			modifySelect.appendChild(option);
 		}
 
-		//location.reload();
+		modifySelect.addEventListener("change", this.modifyStatus.bind(this), false);
+		row.insertCell(2).appendChild(modifySelect);
+
+		/** Remove button */
+		let removeButton = document.createElement("button");
+		removeButton.textContent = "Remove";
+		removeButton.setAttribute("id", newTask.id);
+		removeButton.addEventListener("click", this.deleteTask.bind(this), true)
+		
+		row.insertCell(3).appendChild(removeButton);
+
+		
+		this.noTask();
+	}	
+
+	updateTask(id, status) {
+		
+		// Gets the table
+		const table = this.#shadow.querySelector("#listTable");
+		// Gets the rows
+		let rows = table.rows;
+		// For each row...
+		for (let i = 0; i < rows.length; i++) {
+			// If the row ID equals the updated task ID...
+			if (rows[i].id == id) {
+				// Updates the status
+				rows[i].childNodes[1].textContent = status;
+			}
+		}
 	}
 
-	async #getTasks() {
+	setStatusesList(list) {
+		this.#statuses = list;
+	}
 
-		const url = `../TaskServices/api/services/tasklist/`
+	enableAddTask() {
+		const bt = this.#shadow.querySelector("button[type=button]");
+		bt.disabled = false;
+	}
 
-		//await new Promise(r => setTimeout(r, 2000));
+	/**
+	 * 
+	 * @param {any} method
+	 */
+	set addTaskCallback(method) {
+		this.#addTaskCallbacks.push(method);
+	}
+	
+	
+	addTask(event) {
+		this.#addTaskCallbacks.forEach((x) => x(event))
+	}
 
-		try {
+	/**
+	 * 
+	 * @param {any} method
+	 */
+	set changeStatusCallback(method) {
+		this.#changeStatusCallbacks.push(method);
+	}
+
+	modifyStatus(task) {
+		// The ID of the task to modify the status of
+		let id = task.target.id
+		// The new status
+		let status = this.#statuses[task.target.value]
+		
+		// Asks the user to confirm the change
+		let r = window.confirm("Change status to " + status + "?")
+		if (r) {
+			this.#changeStatusCallbacks.forEach((x) => x(id, status))
+		} else {
+			console.log("Cancelled by user.")
+		}
+	}
+
+	/**
+	 * 
+	 * @param {any} method
+	 */
+	set deleteTaskCallback(method) {
+		this.#deleteTaskCallbacks.push(method);
+	}
+	
+	deleteTask(object) {
+		
+		let id = object.target.id
+		let confirmation = window.confirm("Do you want to delete this task?");
+		if (confirmation){
 			
-			const response = await fetch(url, { method: "GET" });
-			
-			try {
-
-				const result = await response.json();
-
-				this.#addTasksToList(result.tasks);
-
-				this.#shadow.querySelector("#text").innerHTML = "Found " + Object.keys(result.tasks).length + " tasks.";
-
-			} catch (error) {
-				console.log(error);
-			}
-		} catch (error) {
-		}
+		   this.#deleteTaskCallbacks.forEach((x) => x(id));
+	    }else{
+		   console.log("User canceled");
+	    }
 	}
-
-	#addTasksToList(list) {
-
-		const pre = this.#shadow.querySelector("#taskList")
-		const table = document.createElement("table");
-		const tr = document.createElement("tr");
-
-		table.style.borderCollapse = "collapse";
-		table.style.width = "100%"
-		table.style.borderSpacing = "5em"
-
-		const tasks = document.createElement("td")
-		tasks.innerHTML = "Task";
-		tasks.style.width = "20%"
-
-		const status = document.createElement("td")
-		status.innerHTML = "Status";
-		status.style.width = "20%"
-
-		tr.style.borderBottom = "1pt solid black"
-
-		const empty = document.createElement("td")
-		const empty2 = document.createElement("td")
-
-		tr.appendChild(tasks);
-		tr.appendChild(status);
-		tr.appendChild(empty);
-		tr.appendChild(empty2);
-
-		table.appendChild(tr)
-
-		list.forEach(obj => {
-
-			const tr = document.createElement("tr");
-
-			const task = document.createElement("td")
-			task.innerHTML = obj.title;
-
-			const status = document.createElement("td");
-			status.innerHTML = obj.status;
-
-			const modify = document.createElement("select");
-			modify.setAttribute("id", "modify");
-			modify.onchange = () => { this.#updateTask(obj, modify.value) }
-
-			const defaultModify = document.createElement("option");
-			defaultModify.innerHTML = "Modify";
-
-			const active = document.createElement("option");
-			active.innerHTML = "ACTIVE";
-			const waiting = document.createElement("option");
-			waiting.innerHTML = "WAITING";
-			const done = document.createElement("option");
-			done.innerHTML = "DONE";
-
-			modify.appendChild(defaultModify);
-			modify.appendChild(active);
-			modify.appendChild(waiting);
-			modify.appendChild(done);
-
-			const removeButton = document.createElement("button")
-			removeButton.innerHTML = "Remove";
-			removeButton.addEventListener(("click"), () => { this.#removeTask(obj) })
-			
-
-			tr.appendChild(task);
-			tr.appendChild(status);
-			tr.appendChild(modify);
-			tr.appendChild(removeButton);
-			table.appendChild(tr);
-		})
-
-		pre.appendChild(table);
-
-	}
-
-	async #removeTask(obj) {
-
-		const url = `../TaskServices/api/services/task/`
-
-		try {
-			const response = await fetch(url + obj.id, { method: "DELETE" })
-			try {
-
-				const result = await response.json()
-
-				console.log(result)
-			} catch (error) {
-				console.log(error)
-			}
-		} catch (error) {
-			console.log(error)
-		}
-
-		location.reload();
-	}
-
-	async #getStatuses() {
-
-		const url = `../TaskServices/api/services/allstatuses`
-
-		try {
-			const response = await fetch(url, { method: "GET" })
-			try {
-
-				const result = await response.json()
-
-				return result;
-			} catch (error) {
-				console.log(error)
-			}
-		} catch (error) {
-			console.log(error)
-		}
-	}
-
-	async #updateTask(obj, newstatus) {
-
-		const url = `../TaskServices/api/services/task/`
+	
+	removeTask(id) {
+		let index = 1;
+		const table = this.#shadow.querySelector("#listTable");
+		let rows = table.rows;
 		
-		const data = {
-			"status": newstatus
-		};
-		
-		const requestOptions = {
-			method: 'PUT',
-			headers: { "Content-Type": "application/json; charset=utf-8" },
-			body: JSON.stringify(data),
-			cache: "no-cache",
-			redirect: "error"
-		};
+		for (let i = 0; i < rows.length; i++) {
 
-		try {
-			const response = await fetch(url + obj.id, requestOptions)
-			try {
-				location.reload();
-			} catch (error) {
-				console.log(error)
+			if (rows[i].id == id) {
+				index = i;
 			}
-		} catch (error) {
-			console.log(error)
 		}
+		
+		table.deleteRow(index);
 
-		//location.reload();
+		this.noTask();
 	}
 
-
-
-
-
-
-
-
+	noTask() {
+		const table = this.#shadow.querySelector("#listTable");
+		let rows = table.rows;
+		let numberofTasks = -1;
+		
+		for (let i = 0; i < rows.length; i++) {
+			numberofTasks++;
+		}
+		
+		if (numberofTasks == 0) {
+			this.#shadow.querySelector("span").textContent = "No tasks were found.";
+			return;
+		}
+		
+		this.#shadow.querySelector("span").textContent = "Found " + numberofTasks + " tasks.";
+	}
 
 }
