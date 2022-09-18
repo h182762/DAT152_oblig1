@@ -22,9 +22,11 @@ export default class extends HTMLElement {
 		form.addEventListener("submit", this.submit)
 	}
 
+	//link to css file
 	#createLink() {
 		const link = document.createElement("link");
 
+		//Use directory of script as directory of css file
 		const path = import.meta.url.match(/.*\//)[0];
 		link.href = path.concat(this.#cssfile);
 		link.rel = "stylesheet";
@@ -33,6 +35,7 @@ export default class extends HTMLElement {
 		return link;
 	}
 
+	//Taskbox content
 	#createHTML() {
 		const wrapper = document.createElement("div");
 
@@ -61,6 +64,7 @@ export default class extends HTMLElement {
 		return wrapper;
 	}
 
+	//Shows the modal box
 	show() {
 		let modal = this.#shadow.querySelector("#myModal");
 		modal.style.display = "block";
@@ -96,6 +100,7 @@ export default class extends HTMLElement {
 		this.#newTaskCallbacks.push(callback);
 	}
 
+	//Removes the modal box from the view
 	close() {
 		let modal = this.#shadow.querySelector("#myModal");
 		modal.style.display = "none";
