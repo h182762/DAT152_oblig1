@@ -1,7 +1,14 @@
 "use strict";
 
 export default class {
-
+	
+	/**
+	 * Adds task to database
+	 *
+	 * @param data Task to be added
+	 * @param callback callback function to be called on successful execution
+	 * @async
+	 */
 	async addTask(data, callback) {
 		const url = `../TaskServices/api/services/task/`
 
@@ -43,7 +50,14 @@ export default class {
 		}
 	}
 
-
+	/**
+	 * Updates task status
+	 *
+	 * @param id id of the task
+	 * @param status new status
+	 * @param callback callback function to be called on successful execution
+	 * @async
+	 */
 	async updateTask(id, status, callback) {
 
 		const url = `../TaskServices/api/services/task/`
@@ -73,11 +87,10 @@ export default class {
 	}
 
 	/**
-	  *	
 	  * Returns all tasks
+	  *
 	  * @async
 	  */
-
 	async getTasks() {
 
 		const url = `../TaskServices/api/services/tasklist/`
@@ -96,6 +109,11 @@ export default class {
 		}
 	}
 
+	/**
+	 * Returns all statuses
+	 *
+	 * @async
+	 */
 	async getStatuses() {
 
 		const url = `../TaskServices/api/services/allstatuses`
@@ -115,6 +133,13 @@ export default class {
 		}
 	}
 
+	/**
+	 * Remove task from database
+	 *
+	 * @param id id of the task
+	 * @param callback callback function to be called on successful execution
+	 * @async
+	 */
 	async removeTask(id, callback) {
 
 		const url = `../TaskServices/api/services/task/`;
