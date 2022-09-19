@@ -1,5 +1,5 @@
 export default class extends HTMLElement {
-	#cssfile = "main.css";
+	#cssfile = "../css/task-list-style.css";
 	#shadow;
 	#statuses;
 	#deleteTaskCallbacks;

@@ -1,0 +1,15 @@
+table#listTable {
+	border-collapse: collapse;
+	width: 45%;
+	border-spacing: 5em;
+	border-bottom: 1pt solid black;
+}
+
+tr#top {
+	font-weight: bold;
+	border-bottom: 1pt solid black;
+}
+
+p {
+	color: black;
+}

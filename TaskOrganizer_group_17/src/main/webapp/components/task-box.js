@@ -1,5 +1,5 @@
 export default class extends HTMLElement {
-	#cssfile = "./modal.css";
+	#cssfile = "../css/task-box-style.css";
 	#shadow;
 	#statuses;
 	#newTaskCallbacks;

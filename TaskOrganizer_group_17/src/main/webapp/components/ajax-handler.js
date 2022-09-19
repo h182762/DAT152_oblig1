@@ -1,12 +1,12 @@
 "use strict";
 
 export default class {
-	
+
 	/**
 	 * Adds task to database
 	 *
-	 * @param data Task to be added
-	 * @param callback callback function to be called on successful execution
+	 * @param {Task} data - Task to be added
+	 * @param {function} callback - callback function to be called on successful execution
 	 * @async
 	 */
 	async addTask(data, callback) {
@@ -24,6 +24,10 @@ export default class {
 			const response = await fetch(url, requestOptions)
 
 			if (response.ok) {
+				
+				console.log("Success on adding task");
+
+				/** Fetching the id to inject into html */
 
 				const taskjson = await this.getTasks()
 				const alltasks = taskjson.tasks
@@ -31,10 +35,11 @@ export default class {
 
 				for (let i = 0; i < alltasks.length; i++) {
 					if (alltasks[i].id > id) {
+						// Going through all ids and fetching the largest number
 						id = alltasks[i].id
 					}
 				}
-				
+
 				const newdata = {
 					"id": id,
 					"title": data.title,
@@ -53,9 +58,9 @@ export default class {
 	/**
 	 * Updates task status
 	 *
-	 * @param id id of the task
-	 * @param status new status
-	 * @param callback callback function to be called on successful execution
+	 * @param {integer} id - id of the task
+	 * @param {string} status - new status
+	 * @param {function} callback - callback function to be called on successful execution
 	 * @async
 	 */
 	async updateTask(id, status, callback) {
@@ -78,7 +83,7 @@ export default class {
 			const response = await fetch(url + id, requestOptions)
 
 			if (response.ok) {
-				console.log("Success!")
+				console.log("Success on updating task with id " + id)
 				callback(id, status)
 			}
 		} catch (error) {
@@ -90,6 +95,7 @@ export default class {
 	  * Returns all tasks
 	  *
 	  * @async
+	  * @returns tasks in JSON format
 	  */
 	async getTasks() {
 
@@ -113,6 +119,7 @@ export default class {
 	 * Returns all statuses
 	 *
 	 * @async
+	 * @returns statuses in JSON format
 	 */
 	async getStatuses() {
 
@@ -136,8 +143,8 @@ export default class {
 	/**
 	 * Remove task from database
 	 *
-	 * @param id id of the task
-	 * @param callback callback function to be called on successful execution
+	 * @param {Integer} id - id of the task
+	 * @param {function} callback - callback function to be called on successful execution
 	 * @async
 	 */
 	async removeTask(id, callback) {
@@ -148,7 +155,7 @@ export default class {
 			const response = await fetch(url + id, { method: "DELETE" });
 
 			if (response.ok) {
-				console.log("Success");
+				console.log("Success on removing task with id " + id);
 				callback(id);
 			}
 		} catch (error) {
