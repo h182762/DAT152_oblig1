@@ -1,19 +1,17 @@
-"use strict";
-
-import AjaxHandler from "../components/ajax-handler.js";
 
 export default class {
 	#taskList
 	#taskBox
 	#ajaxHandler
 
-	constructor() {
+	constructor(taskList, taskBox, ajaxHandler) {
+
 		// Starts the Ajax Handler
-		this.#ajaxHandler = new AjaxHandler();
+		this.#ajaxHandler = ajaxHandler
 		// Gets the task list
-		this.#taskList = document.querySelector("task-list");
+		this.#taskList = Array.from(taskList)
 		// Gets the task box
-		this.#taskBox = document.querySelector("task-box");
+		this.#taskBox = Array.from(taskBox)
 		// Starts the setup function
 		this.setup()
 	}
@@ -28,40 +26,56 @@ export default class {
 		const statuses = statusesJson.allstatuses
 
 		// Sets the statuses
-		this.#taskList.setStatusesList(statuses)
-		this.#taskBox.setStatuseslist(statuses)
+		for (let i = 0; i < this.#taskList.length; i++) {
+			this.#taskList[i].setStatusesList(statuses)
+			this.#taskBox[i].setStatuseslist(statuses)
 
-		// Shows the tasks that were fetched
-		for (let i = 1; i <= tasks.length; i++) {
-			this.#taskList.showTask(tasks[i - 1]);
-		}
-		// Enables adding new tasks
-		this.#taskList.enableAddTask();
+			// Shows the tasks that were fetched
+			for (let j = 1; j <= tasks.length; j++) {
+				this.#taskList[i].showTask(tasks[j - 1]);
+			}
 
-		// Callback for changing status
-		this.#taskList.changeStatusCallback = (id, newStatus) => {
-			// TODO: Make the status change without reloading
-			this.#ajaxHandler.updateTask(id, newStatus, (id, status) => this.#taskList.updateTask(id, status))
-		}
-		// Callback for deleting tasks
-		this.#taskList.deleteTaskCallback = (id) => {
-			// TODO: Make the task disappear without reloading
-			this.#ajaxHandler.removeTask(id, (id) => this.#taskList.removeTask(id))
+			// Enables adding new tasks
+			this.#taskList[i].enableAddTask();
+
+
+			// Callback for changing status
+			this.#taskList[i].changeStatusCallback = (id, newStatus) => {
+
+				this.#ajaxHandler.updateTask(id, newStatus, (id, status) => this.#taskList.forEach((list) => {
+					list.updateTask(id, status);
+				}))
+			}
+			// Callback for deleting tasks
+			this.#taskList[i].deleteTaskCallback = (id) => {
+
+				this.#ajaxHandler.removeTask(id, (id) => this.#taskList.forEach((list) => {
+					list.removeTask(id);
+				}))
+			}
+
+			// Shows the task box
+			this.#taskList[i].addTaskCallback = () => {
+				this.#taskBox[i].show();
+			}
+
+			// Adds a new task to the database
+			this.#taskBox[i].newTaskCallback = (task) => {
+				this.#ajaxHandler.addTask(task, (task) => this.#taskList.forEach((list) => {
+					list.showTask(task);
+				}))
+			}
 		}
 
-		// Shows the task box
-		this.#taskList.addTaskCallback = () => {
-			this.#taskBox.show();
-		}
 
-		// Adds a new task to the database
-		this.#taskBox.newTaskCallback = (task) => {
-			this.#ajaxHandler.addTask(task, (task) => this.#taskList.showTask(task))
-		}
+
+
+
+
+
 
 
 	}
-
 
 
 	async test() {

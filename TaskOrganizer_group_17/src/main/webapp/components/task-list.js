@@ -23,6 +23,8 @@ export default class extends HTMLElement {
 		const bt = this.#shadow.querySelector("button[type=button]");
 		bt.addEventListener("click", this.addTask.bind(this), false);
 		bt.disabled = true;
+		
+		this.noTask();
 	}
 
 	#createLink() {
@@ -218,9 +220,11 @@ export default class extends HTMLElement {
 		
 		if (numberofTasks == 0) {
 			this.#shadow.querySelector("span").textContent = "No tasks were found.";
+			this.#shadow.querySelector("#top").style.visibility = "hidden";
+			
 			return;
 		}
-		
+		this.#shadow.querySelector("#top").style.visibility = "visible";
 		this.#shadow.querySelector("span").textContent = "Found " + numberofTasks + " tasks.";
 	}
 

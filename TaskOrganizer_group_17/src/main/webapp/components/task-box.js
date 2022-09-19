@@ -3,21 +3,21 @@ export default class extends HTMLElement {
 	#shadow;
 	#statuses;
 	#newTaskCallbacks;
-		
+
 	constructor() {
 		super();
 
 		this.#shadow = this.attachShadow({ mode: "closed" });
-		
+
 		this.#statuses = new Array();
 		this.#newTaskCallbacks = new Array();
 
 		this.#createLink();
 		this.#createHTML();
-		
+
 		let modal = this.#shadow.querySelector("#myModal");
 		modal.style.display = "none";
-		
+
 		let form = this.#shadow.querySelector("#form");
 		form.addEventListener("submit", this.submit)
 	}
@@ -51,13 +51,13 @@ export default class extends HTMLElement {
 		    <br>
 		     
 		    <label for="status">Status:</label>
-		    
 		    </form>
+		    
 		  </div>
 		
 		</div>
 		`;
-		
+
 		wrapper.insertAdjacentHTML("beforeend", content);
 		this.#shadow.appendChild(wrapper);
 
@@ -69,21 +69,29 @@ export default class extends HTMLElement {
 		let modal = this.#shadow.querySelector("#myModal");
 		modal.style.display = "block";
 	}
-	
+
 	submitEvent(event) {
 		event.preventDefault();
 		let title = event.target.title.value;
 		let status = event.target.status.value;
-		
-		const newtask = {
-			"title": title,
-			"status": status
-		};
-		
-		this.#newTaskCallbacks.forEach((x) => x(newtask))
-		this.close();
+
+		// Validating input
+		if (title && status) {
+			
+			
+			const newtask = {
+				"title": title,
+				"status": status
+			};
+
+			this.#newTaskCallbacks.forEach((x) => x(newtask))
+
+			this.close();
+		}
+
+
 	}
-	
+
 	closeEvent() {
 		this.close();
 	}
@@ -94,25 +102,27 @@ export default class extends HTMLElement {
 	}
 
 	/**
-     * @param {any} callback
-     */
+	 * @param {any} callback
+	 */
 	set newTaskCallback(callback) {
 		this.#newTaskCallbacks.push(callback);
 	}
 
 	//Removes the modal box from the view
 	close() {
+
+		// Close modal box
 		let modal = this.#shadow.querySelector("#myModal");
 		modal.style.display = "none";
-		
+
 	}
 
 	#addStatus() {
 		let close = this.#shadow.querySelector("#close");
 		close.addEventListener("click", this.closeEvent.bind(this));
-		
+
 		let div = this.#shadow.querySelector("#form");
-		
+
 		let modifySelect = document.createElement("select");
 		modifySelect.setAttribute("id", "status");
 		let option = document.createElement("option")
@@ -128,13 +138,13 @@ export default class extends HTMLElement {
 			option.text = this.#statuses[i]
 			modifySelect.appendChild(option)
 		}
-		
+
 		div.appendChild(modifySelect)
 		div.appendChild(document.createElement("br"))
-		
-	    let submit = document.createElement("input");
-	    submit.setAttribute("type", "submit");
-	    div.appendChild(submit)
-	    div.addEventListener("submit", this.submitEvent.bind(this))
+
+		let submit = document.createElement("input");
+		submit.setAttribute("type", "submit");
+		div.appendChild(submit)
+		div.addEventListener("submit", this.submitEvent.bind(this))
 	}
 }
