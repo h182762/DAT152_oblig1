@@ -5,31 +5,38 @@ export default class extends HTMLElement {
 	#deleteTaskCallbacks;
 	#addTaskCallbacks
 	#changeStatusCallbacks;
-
+	/**
+	* Constructor for task-list.js
+	*/
 	constructor() {
+		// Must have super
 		super();
-
+		// Arrays for status and callbacks
 		this.#shadow = this.attachShadow({ mode: "closed" });
 		this.#statuses = new Array();
 		this.#deleteTaskCallbacks = new Array();
 		this.#addTaskCallbacks = new Array()
 		this.#changeStatusCallbacks = new Array();
-
+		// Link and HTML
 		this.#createLink();
 		this.#createHTML();
-
+		// Waiting for server data text
 		this.#shadow.querySelector("span").textContent = "Waiting for server data.";
-
+		// Create new task button
 		const bt = this.#shadow.querySelector("button[type=button]");
 		bt.addEventListener("click", this.addTask.bind(this), false);
+		// Sets button as disabled
 		bt.disabled = true;
 		
 		this.noTask();
 	}
-
+	
+	/**
+    * Links the CSS style sheet
+    */
 	#createLink() {
 		const link = document.createElement("link");
-
+		// Imports URL
 		const path = import.meta.url.match(/.*\//)[0];
 		link.href = path.concat(this.#cssfile);
 		link.rel = "stylesheet";
@@ -38,9 +45,13 @@ export default class extends HTMLElement {
 		return link;
 	}
 
+	/**
+	* Html for task list
+	*/
 	#createHTML() {
+		// Sets wrapper as a div
 		const wrapper = document.createElement("div");
-
+		// Content of the div
 		const content = `
 		<p><span></span></p>
 		
@@ -59,13 +70,18 @@ export default class extends HTMLElement {
 	
 		
 		`;
-			
+		// Wraps content to HTML
 		wrapper.insertAdjacentHTML("beforeend", content);
 		this.#shadow.appendChild(wrapper);
 		
 		return wrapper;
 	}
-
+	
+	/**
+    * @param {any} newTask
+    *
+    * Shows task 
+    */
 	showTask(newTask) {
 		// Gets the table
 		const table = this.#shadow.querySelector("#listTable");
@@ -78,7 +94,7 @@ export default class extends HTMLElement {
 		row.className += "rows";
 		row.setAttribute("id", newTask.id);
 
-		/** Modify select list */
+		// Modify select list
 		let modifySelect = document.createElement("select");
 		modifySelect.setAttribute("id", newTask.id);
 
@@ -99,7 +115,7 @@ export default class extends HTMLElement {
 		modifySelect.addEventListener("change", this.modifyStatus.bind(this), false);
 		row.insertCell(2).appendChild(modifySelect);
 
-		/** Remove button */
+		// Remove button
 		let removeButton = document.createElement("button");
 		removeButton.textContent = "Remove";
 		removeButton.setAttribute("id", newTask.id);
@@ -110,7 +126,13 @@ export default class extends HTMLElement {
 		
 		this.noTask();
 	}	
-
+	
+    /**
+    * @param {any} id
+    * @param {any} status
+    *
+    * Updates the task list
+    */
 	updateTask(id, status) {
 		
 		// Gets the table
@@ -127,36 +149,55 @@ export default class extends HTMLElement {
 		}
 	}
 
+    /** 
+    * @param {any} list
+    *
+    * Sets status of list [ACTIVE, WATING, CLOSED]
+    */
 	setStatusesList(list) {
 		this.#statuses = list;
 	}
 
+	/**
+	* Enables addTask button 
+	*/
 	enableAddTask() {
 		const bt = this.#shadow.querySelector("button[type=button]");
 		bt.disabled = false;
 	}
 
 	/**
-	 * 
 	 * @param {any} method
+	 *
+	 * Adds task callback
 	 */
 	set addTaskCallback(method) {
 		this.#addTaskCallbacks.push(method);
 	}
 	
-	
+	/** 
+	* @param {any} event
+	*
+	* Adds new task 
+	*/
 	addTask(event) {
 		this.#addTaskCallbacks.forEach((x) => x(event))
 	}
 
 	/**
-	 * 
 	 * @param {any} method
+	 *
+	 * Changes status callback
 	 */
 	set changeStatusCallback(method) {
 		this.#changeStatusCallbacks.push(method);
 	}
-
+	
+    /**
+    * @param {any} task
+    *
+    * Modifies status of task
+    */
 	modifyStatus(task) {
 		// The ID of the task to modify the status of
 		let id = task.target.id
@@ -173,13 +214,19 @@ export default class extends HTMLElement {
 	}
 
 	/**
-	 * 
 	 * @param {any} method
+	 *
+	 * Deletes task callback
 	 */
 	set deleteTaskCallback(method) {
 		this.#deleteTaskCallbacks.push(method);
 	}
 	
+	/**
+	 * @param {any} object
+	 *
+	 * Deletes task based on id from task list
+	 */
 	deleteTask(object) {
 		
 		let id = object.target.id
@@ -192,11 +239,19 @@ export default class extends HTMLElement {
 	    }
 	}
 	
+	/**
+	* @param {any} id
+	*
+	* Removes task based on id from task list
+	*/
 	removeTask(id) {
 		let index = 1;
+		
+		// Sets the task table as a const
 		const table = this.#shadow.querySelector("#listTable");
 		let rows = table.rows;
 		
+		// Looks for corresponding task id to id input
 		for (let i = 0; i < rows.length; i++) {
 
 			if (rows[i].id == id) {
@@ -209,6 +264,10 @@ export default class extends HTMLElement {
 		this.noTask();
 	}
 
+    /**
+    * Sets text as "No tasks were found if there are no tasks"
+    * Sets text as "Found numberOfTasks tasks"
+    */ 
 	noTask() {
 		const table = this.#shadow.querySelector("#listTable");
 		let rows = table.rows;
