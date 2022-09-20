@@ -8,10 +8,10 @@ customElements.define("task-box", TaskBox);
 
 
 // All task list elements in html
-const allLists = document.getElementsByTagName('task-list');
+const allLists = document.querySelectorAll('task-list');
 
 // All task box elements in html
-const allBoxes = document.getElementsByTagName('task-box');
+const allBoxes = document.querySelectorAll('task-box');
 
 // Runs the constructor for TaskView
 new TaskView(allLists, allBoxes, new AjaxHandler())

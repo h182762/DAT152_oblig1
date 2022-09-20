@@ -5,6 +5,7 @@ export default class extends HTMLElement {
 	#deleteTaskCallbacks;
 	#addTaskCallbacks
 	#changeStatusCallbacks;
+	
 	/**
 	* Constructor for task-list.js
 	*/
@@ -20,15 +21,17 @@ export default class extends HTMLElement {
 		// Link and HTML
 		this.#createLink();
 		this.#createHTML();
+		
 		// Waiting for server data text
 		this.#shadow.querySelector("span").textContent = "Waiting for server data.";
+		
 		// Create new task button
 		const bt = this.#shadow.querySelector("button[type=button]");
 		bt.addEventListener("click", this.addTask.bind(this), false);
 		// Sets button as disabled
 		bt.disabled = true;
 		
-		this.noTask();
+		
 	}
 	
 	/**

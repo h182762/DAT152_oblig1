@@ -25,20 +25,10 @@ export default class {
 
 			if (response.ok) {
 				
-				console.log("Success on adding task");
-
-				/** Fetching the id to inject into html */
-
-				const taskjson = await this.getTasks()
-				const alltasks = taskjson.tasks
-				let id = -1
-
-				for (let i = 0; i < alltasks.length; i++) {
-					if (alltasks[i].id > id) {
-						// Going through all ids and fetching the largest number
-						id = alltasks[i].id
-					}
-				}
+				let json = await response.json()
+				let id = json.task.id
+				
+				console.log("Success on adding task with id " + id);
 
 				const newdata = {
 					"id": id,
