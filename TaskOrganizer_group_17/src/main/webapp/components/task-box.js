@@ -26,8 +26,8 @@ export default class extends HTMLElement {
 	}
 
 	/**
-     * Links the CSS style sheet
-     */
+	 * Links the CSS style sheet
+	 */
 	#createLink() {
 		const link = document.createElement("link");
 
@@ -92,7 +92,7 @@ export default class extends HTMLElement {
 		// Validating input
 		// If missing title or status nothing happens
 		if (title && status) {
-			
+
 			const newtask = {
 				"title": title,
 				"status": status
@@ -110,12 +110,12 @@ export default class extends HTMLElement {
 	closeEvent() {
 		this.close();
 	}
-	
-    /** 
-     * Sets status of list [ACTIVE, WATING, CLOSED]
-     *
-     * @param {any} list
-     */
+
+	/** 
+	 * Sets status of list [ACTIVE, WATING, CLOSED]
+	 *
+	 * @param {any} list
+	 */
 	setStatuseslist(list) {
 		this.#statuses = list;
 		this.#addStatus();

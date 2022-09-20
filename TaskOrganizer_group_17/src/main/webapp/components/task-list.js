@@ -35,8 +35,8 @@ export default class extends HTMLElement {
 	}
 	
 	/**
-     * Links the CSS style sheet
-     */
+	 * Links the CSS style sheet
+	 */
 	#createLink() {
 		const link = document.createElement("link");
 		// Imports URL

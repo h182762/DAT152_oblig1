@@ -7,13 +7,13 @@ export default class {
 
 		// Gets the Ajax Handler
 		this.#ajaxHandler = ajaxHandler
-		
+
 		// Gets the task lists
 		this.#taskList = Array.from(taskList)
-		
+
 		// Gets the task boxes
 		this.#taskBox = Array.from(taskBox)
-		
+
 		// Starts the setup function
 		this.setup()
 	}
@@ -24,18 +24,18 @@ export default class {
 	 * and initiate callback functions
 	 */
 	async setup() {
-		
+
 		// Fetches tasks from the database
 		const tasksJson = await this.#ajaxHandler.getTasks()
 		const tasks = tasksJson.tasks
-		
+
 		// Fetches statuses from the database
 		const statusesJson = await this.#ajaxHandler.getStatuses();
 		const statuses = statusesJson.allstatuses
 
 		// Looping through all list and box objects
 		for (let i = 0; i < this.#taskList.length; i++) {
-			
+
 			// Sets the statuses
 			this.#taskList[i].setStatusesList(statuses)
 			this.#taskBox[i].setStatuseslist(statuses)
@@ -56,7 +56,7 @@ export default class {
 					list.updateTask(id, status);
 				}))
 			}
-			
+
 			// Callback for deleting tasks
 			this.#taskList[i].deleteTaskCallback = (id) => {
 
