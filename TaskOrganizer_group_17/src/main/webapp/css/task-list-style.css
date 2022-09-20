@@ -1,3 +1,4 @@
+/* Styling for list table */
 table#listTable {
 	border-collapse: collapse;
 	width: 45%;
@@ -5,11 +6,8 @@ table#listTable {
 	border-bottom: 1pt solid black;
 }
 
+/* Styling for Task and Status top bar in table */
 tr#top {
 	font-weight: bold;
 	border-bottom: 1pt solid black;
-}
-
-p {
-	color: black;
 }

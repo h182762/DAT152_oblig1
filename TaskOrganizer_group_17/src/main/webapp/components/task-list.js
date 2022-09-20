@@ -7,8 +7,8 @@ export default class extends HTMLElement {
 	#changeStatusCallbacks;
 	
 	/**
-	* Constructor for task-list.js
-	*/
+	 * Constructor for task-list.js
+	 */
 	constructor() {
 		// Must have super
 		super();
@@ -35,8 +35,8 @@ export default class extends HTMLElement {
 	}
 	
 	/**
-    * Links the CSS style sheet
-    */
+     * Links the CSS style sheet
+     */
 	#createLink() {
 		const link = document.createElement("link");
 		// Imports URL
@@ -49,8 +49,8 @@ export default class extends HTMLElement {
 	}
 
 	/**
-	* Html for task list
-	*/
+	 * Html for task list
+	 */
 	#createHTML() {
 		// Sets wrapper as a div
 		const wrapper = document.createElement("div");
@@ -79,12 +79,50 @@ export default class extends HTMLElement {
 		
 		return wrapper;
 	}
+	 
+    /** 
+     * Sets status of list [ACTIVE, WATING, CLOSED]
+     *
+     * @param {any} list
+     */
+	setStatusesList(list) {
+		this.#statuses = list;
+	}
+	
+
+	/**
+	 * Enables addTask button 
+	 */
+	enableAddTask() {
+		const bt = this.#shadow.querySelector("button[type=button]");
+		bt.disabled = false;
+	}
+	
+	
+	
+	/** 
+	 * Fires callback when new task button is clicked
+	 *
+	 * @param {any} event
+	 */
+	addTask(event) {
+		this.#addTaskCallbacks.forEach((x) => x(event))
+	}
 	
 	/**
-    * @param {any} newTask
-    *
-    * Shows task 
-    */
+	 * AddTask callback
+	 *
+	 * @param {any} method
+	 */
+	set addTaskCallback(method) {
+		this.#addTaskCallbacks.push(method);
+	}
+	
+	/**
+     * Shows/adds tasks
+     *
+     * @param {Task} newTask - new task to be added
+     */
 	showTask(newTask) {
 		// Gets the table
 		const table = this.#shadow.querySelector("#listTable");
@@ -130,11 +168,42 @@ export default class extends HTMLElement {
 		this.noTask();
 	}	
 	
+	
+
     /**
-    * @param {any} id
-    * @param {any} status
+    * Confirmation for updating status of task
     *
+    * @param {any} task - task to be modified
+    */
+	modifyStatus(task) {
+		// The ID of the task to modify the status of
+		let id = task.target.id
+		// The new status
+		let status = this.#statuses[task.target.value]
+		
+		// Asks the user to confirm the change
+		let confirmation = window.confirm("Change status to " + status + "?")
+		if (confirmation) {
+			this.#changeStatusCallbacks.forEach((x) => x(id, status))
+		} else {
+			console.log("Cancelled by user.")
+		}
+	}
+	
+	/**
+	 * Changes status callback
+	 *
+	 * @param {any} method - callback method
+	 */
+	set changeStatusCallback(method) {
+		this.#changeStatusCallbacks.push(method);
+	}
+	
+	 /**
     * Updates the task list
+    * 
+    * @param {number} id - id of task
+    * @param {string} status - new status
     */
 	updateTask(id, status) {
 		
@@ -151,88 +220,17 @@ export default class extends HTMLElement {
 			}
 		}
 	}
-
-    /** 
-    * @param {any} list
-    *
-    * Sets status of list [ACTIVE, WATING, CLOSED]
-    */
-	setStatusesList(list) {
-		this.#statuses = list;
-	}
-
-	/**
-	* Enables addTask button 
-	*/
-	enableAddTask() {
-		const bt = this.#shadow.querySelector("button[type=button]");
-		bt.disabled = false;
-	}
-
-	/**
-	 * @param {any} method
-	 *
-	 * Adds task callback
-	 */
-	set addTaskCallback(method) {
-		this.#addTaskCallbacks.push(method);
-	}
 	
-	/** 
-	* @param {any} event
-	*
-	* Adds new task 
-	*/
-	addTask(event) {
-		this.#addTaskCallbacks.forEach((x) => x(event))
-	}
-
-	/**
-	 * @param {any} method
-	 *
-	 * Changes status callback
-	 */
-	set changeStatusCallback(method) {
-		this.#changeStatusCallbacks.push(method);
-	}
 	
-    /**
-    * @param {any} task
-    *
-    * Modifies status of task
-    */
-	modifyStatus(task) {
-		// The ID of the task to modify the status of
+	
+	/**
+	 * Confirmation function for deleting task. Adds task id to callback
+	 *
+	 * @param {any} task - task to be deleted
+	 */
+	deleteTask(task) {
+		
 		let id = task.target.id
-		// The new status
-		let status = this.#statuses[task.target.value]
-		
-		// Asks the user to confirm the change
-		let r = window.confirm("Change status to " + status + "?")
-		if (r) {
-			this.#changeStatusCallbacks.forEach((x) => x(id, status))
-		} else {
-			console.log("Cancelled by user.")
-		}
-	}
-
-	/**
-	 * @param {any} method
-	 *
-	 * Deletes task callback
-	 */
-	set deleteTaskCallback(method) {
-		this.#deleteTaskCallbacks.push(method);
-	}
-	
-	/**
-	 * @param {any} object
-	 *
-	 * Deletes task based on id from task list
-	 */
-	deleteTask(object) {
-		
-		let id = object.target.id
 		let confirmation = window.confirm("Do you want to delete this task?");
 		if (confirmation){
 			
@@ -243,9 +241,18 @@ export default class extends HTMLElement {
 	}
 	
 	/**
-	* @param {any} id
-	*
+	 * Deletes task callback
+	 *
+	 * @param {any} method
+	 */
+	set deleteTaskCallback(method) {
+		this.#deleteTaskCallbacks.push(method);
+	}
+	
+	/**
 	* Removes task based on id from task list
+	*
+	* @param {any} id
 	*/
 	removeTask(id) {
 		let index = 1;

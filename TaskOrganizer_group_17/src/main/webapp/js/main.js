@@ -6,13 +6,16 @@ import AjaxHandler from "../components/ajax-handler.js";
 customElements.define("task-list", TaskList);
 customElements.define("task-box", TaskBox);
 
-
 // All task list elements in html
 const allLists = document.querySelectorAll('task-list');
 
 // All task box elements in html
 const allBoxes = document.querySelectorAll('task-box');
 
-// Runs the constructor for TaskView
+/**
+ * Runs the constructor for TaskView
+ * Passing all lists and all boxes
+ * And creates new instance of AjaxHandler
+ */
 new TaskView(allLists, allBoxes, new AjaxHandler())
 

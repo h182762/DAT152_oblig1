@@ -1,5 +1,3 @@
-"use strict";
-
 export default class {
 
 	/**
@@ -24,10 +22,10 @@ export default class {
 			const response = await fetch(url, requestOptions)
 
 			if (response.ok) {
-				
+
 				let json = await response.json()
 				let id = json.task.id
-				
+
 				console.log("Success on adding task with id " + id);
 
 				const newdata = {
@@ -39,7 +37,6 @@ export default class {
 				callback(newdata)
 			}
 		}
-
 		catch (error) {
 			console.log(error)
 		}
@@ -118,7 +115,6 @@ export default class {
 		try {
 			const response = await fetch(url, { method: "GET" })
 			try {
-
 				const result = await response.json()
 
 				return result;

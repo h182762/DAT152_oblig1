@@ -4,6 +4,9 @@ export default class extends HTMLElement {
 	#statuses;
 	#newTaskCallbacks;
 
+	/**
+	 * Constructor for task box
+	 */
 	constructor() {
 		super();
 
@@ -22,7 +25,9 @@ export default class extends HTMLElement {
 		form.addEventListener("submit", this.submit)
 	}
 
-	//link to css file
+	/**
+     * Links the CSS style sheet
+     */
 	#createLink() {
 		const link = document.createElement("link");
 
@@ -35,7 +40,9 @@ export default class extends HTMLElement {
 		return link;
 	}
 
-	//Taskbox content
+	/**
+	 * Html for task box
+	 */
 	#createHTML() {
 		const wrapper = document.createElement("div");
 
@@ -64,20 +71,27 @@ export default class extends HTMLElement {
 		return wrapper;
 	}
 
-	//Shows the modal box
+	/**
+	 * Shows modal box
+	 */
 	show() {
 		let modal = this.#shadow.querySelector("#myModal");
 		modal.style.display = "block";
 	}
 
+	/**
+	 * Fetches title and status from modal box and fires callback
+	 *
+	 * @param {any} event
+	 */
 	submitEvent(event) {
 		event.preventDefault();
 		let title = event.target.title.value;
 		let status = event.target.status.value;
 
 		// Validating input
+		// If missing title or status nothing happens
 		if (title && status) {
-			
 			
 			const newtask = {
 				"title": title,
@@ -88,35 +102,48 @@ export default class extends HTMLElement {
 
 			this.close();
 		}
-
-
 	}
 
+	/**
+	 * Closes event
+	 */
 	closeEvent() {
 		this.close();
 	}
-
+	
+    /** 
+     * Sets status of list [ACTIVE, WATING, CLOSED]
+     *
+     * @param {any} list
+     */
 	setStatuseslist(list) {
 		this.#statuses = list;
 		this.#addStatus();
 	}
 
 	/**
+	 * Callback for new tasks
+	 *
 	 * @param {any} callback
 	 */
 	set newTaskCallback(callback) {
 		this.#newTaskCallbacks.push(callback);
 	}
 
-	//Removes the modal box from the view
+	/**
+	 * Closes modal box
+	 */
 	close() {
 
 		// Close modal box
 		let modal = this.#shadow.querySelector("#myModal");
 		modal.style.display = "none";
-
 	}
 
+	/**
+	 * Adds statuses to drop down in modal box
+	 * and binds submit event to button
+	 */
 	#addStatus() {
 		let close = this.#shadow.querySelector("#close");
 		close.addEventListener("click", this.closeEvent.bind(this));
